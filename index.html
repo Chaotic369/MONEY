@@ -156,11 +156,16 @@ tailwind.config = {
   </div>
 
   <!-- SUMMARY -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-    <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
-      <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1">TOTAL BALANCE</div>
-      <div class="font-mono text-2xl font-bold text-neu-text"><span id="budget-total">₹0</span></div>
-    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center relative">
+        <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1 flex justify-between items-center">
+          <span>TOTAL BALANCE</span>
+          <button onclick="clearBalance()" class="text-neu-accent hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Clear Balance to Zero">
+            <i class="fa-solid fa-eraser text-[12px]"></i>
+          </button>
+        </div>
+        <div class="font-mono text-2xl font-bold text-neu-text"><span id="budget-total">₹0</span></div>
+      </div>
     <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
       <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1">ONLINE</div>
       <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-online">₹0</span></div>
@@ -393,6 +398,54 @@ window.budgetSelectCat = function(cat, btn) {
   inp.focus();
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+};
+
+window.clearBalance = function() {
+  let onlineTotal = 0, cashTotal = 0;
+  (S.budget || []).forEach(b => {
+    const sign = b.category.toLowerCase() === 'taken from' ? 1 : -1;
+    if (b.mode === 'Online') onlineTotal += sign * b.amount;
+    else cashTotal += sign * b.amount;
+  });
+
+  if (onlineTotal === 0 && cashTotal === 0) {
+    toast('BALANCE IS ALREADY ZERO', 'amber');
+    return;
+  }
+
+  const total = onlineTotal + cashTotal;
+  if (!confirm(`Clear your total balance (₹${total})? This will add adjusting entries to zero out your balance while keeping past history intact.`)) return;
+
+  pushHistory();
+  const now = Date.now();
+  
+  if (onlineTotal !== 0) {
+    S.budget.push({
+      id: 'b_' + now + '_1',
+      date: now,
+      category: onlineTotal > 0 ? 'Given to' : 'Taken from',
+      amount: Math.abs(onlineTotal),
+      mode: 'Online',
+      person: 'Balance Reset',
+      item: ''
+    });
+  }
+  
+  if (cashTotal !== 0) {
+    S.budget.push({
+      id: 'b_' + now + '_2',
+      date: now + 1, // slight offset to prevent ID collision just in case
+      category: cashTotal > 0 ? 'Given to' : 'Taken from',
+      amount: Math.abs(cashTotal),
+      mode: 'Cash',
+      person: 'Balance Reset',
+      item: ''
+    });
+  }
+
+  save();
+  renderBudget();
+  toast('BALANCE CLEARED', 'green');
 };
 
 // ─── RENDER ───────────────────────────────────
