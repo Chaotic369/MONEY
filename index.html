@@ -72,18 +72,11 @@ tailwind.config = {
   }
   
   /* Toasts */
-  #toasts { position: fixed; bottom: 90px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 9999; }
-  .toast { padding: 12px 16px; background: var(--neu-text); color: var(--neu-bg); border: none; font-size: 13px; font-weight: 500; border-radius: 16px; animation: slideUp 150ms ease-out forwards; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
-  @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    #toasts { position: fixed; bottom: 90px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 9999; }
+    .toast { padding: 12px 16px; background: var(--neu-text); color: var(--neu-bg); border: none; font-size: 13px; font-weight: 500; border-radius: 16px; animation: slideUp 150ms ease-out forwards; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-  /* Floating UI Overrides */
-  .floating-bar { position: fixed; bottom: 20px; right: 20px; width: 340px; max-width: calc(100vw - 32px); background: var(--neu-box); border: 1px solid var(--neu-track); border-radius: 9999px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 100; transition: all 0.3s; }
-  .floating-bar input { flex: 1; background: transparent; border: none; outline: none; padding: 0; font-size: 12px; color: var(--neu-text); min-width: 0; font-family: 'JetBrains Mono', monospace; }
-  
-  #budget-person-container { position: fixed; bottom: 76px; right: 20px; width: 340px; max-width: calc(100vw - 32px); background: var(--neu-box); border: 1px solid var(--neu-track); border-radius: 9999px; padding: 6px 12px; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 99; transition: all 0.3s; }
-  #budget-person-container input { flex: 1; background: transparent; border: none; outline: none; padding: 0; font-size: 12px; color: var(--neu-text); min-width: 0; font-family: 'JetBrains Mono', monospace; }
-
-  /* Tab / Cat Buttons */
+    /* Tab / Cat Buttons */
   .tab-btn { padding: 8px 20px; font-weight: 600; font-size: 11px; border: 1px solid var(--neu-track); border-radius: 16px; transition: all 150ms; background: var(--neu-bg); color: var(--neu-text); cursor: pointer; }
   .tab-btn.active { background: var(--neu-box); color: var(--neu-highlight); border-color: var(--neu-highlight); }
   .cat-btn { font-size: 10px; font-weight: 500; padding: 6px 14px; color: var(--neu-accent); background: var(--neu-bg); border: 1px solid var(--neu-track); border-radius: 9999px; transition: all 120ms; cursor: pointer; }
@@ -128,23 +121,6 @@ tailwind.config = {
 
 <div id="toasts"></div>
 
-<!-- PERSON INPUT -->
-<div id="budget-person-container">
-  <span class="font-mono text-neu-accent text-sm">@</span>
-  <input id="budget-person" type="text" placeholder="Person name...">
-</div>
-
-<!-- FLOATING ENTRY BAR -->
-<div class="floating-bar">
-  <span class="font-mono text-neu-highlight text-lg leading-none pb-0.5">›</span>
-  <input id="budget-item" type="text" placeholder="Amount + item..." autocomplete="off"
-    onkeydown="if(event.key==='Enter')addBudgetEntry()"
-    oninput="checkBudgetPerson()">
-  <button class="w-7 h-7 flex items-center justify-center rounded-full bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity" onclick="addBudgetEntry()">
-    <i class="fa-solid fa-plus text-xs"></i>
-  </button>
-</div>
-
 <!-- MAIN -->
 <main class="max-w-4xl mx-auto px-4 py-8 pt-12 flex flex-col gap-8">
   
@@ -154,6 +130,24 @@ tailwind.config = {
       <i class="fa-solid fa-indian-rupee-sign text-lg"></i> BUDGET
     </span>
   </div>
+
+  <!-- ADD ENTRY BAR -->
+    <div class="bg-neu-box p-4 rounded-[20px] flex flex-col gap-3 border border-neu-track shadow-sm">
+      <div class="flex items-center gap-2">
+        <span class="font-mono text-neu-highlight text-2xl leading-none font-light pl-2">›</span>
+        <input id="budget-item" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none focus:!ring-0 px-2 py-2 font-mono text-lg text-neu-text placeholder:text-neu-accent/50" placeholder="Amount + item..." autocomplete="off"
+          onkeydown="if(event.key==='Enter')addBudgetEntry()"
+          oninput="checkBudgetPerson()">
+        <button class="w-12 h-12 flex items-center justify-center rounded-xl bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
+          <i class="fa-solid fa-plus"></i>
+        </button>
+      </div>
+      <!-- PERSON INPUT (Hidden by default) -->
+      <div id="budget-person-container" style="display:none;" class="items-center gap-2 pl-4 pr-14">
+        <span class="font-mono text-neu-accent text-sm">@</span>
+        <input id="budget-person" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none px-2 py-1 font-mono text-sm text-neu-text placeholder:text-neu-accent/50" placeholder="Person name...">
+      </div>
+    </div>
 
   <!-- SUMMARY -->
     <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
@@ -322,10 +316,15 @@ function pushHistory() {
 }
 
 // ─── BUDGET LOGIC ─────────────────────────────
+let activeCategoryTag = null;
+
 window.checkBudgetPerson = function() {
   const val = $('budget-item').value.toLowerCase().trim();
   const pContainer = $('budget-person-container');
-  pContainer.style.display = (val === 'given to' || val === 'taken from') ? 'flex' : 'none';
+  let show = false;
+  if (activeCategoryTag === 'gt' || activeCategoryTag === 'tf') show = true;
+  if (val.includes('given to') || val.includes('taken from')) show = true;
+  pContainer.style.display = show ? 'flex' : 'none';
 };
 
 window.addBudgetEntry = function() {
@@ -338,27 +337,35 @@ window.addBudgetEntry = function() {
 
   parts.forEach(p => {
     const num = parseFloat(p);
-    if (!isNaN(num) && num > 0) amount = num;
+    if (!isNaN(num) && num > 0 && amount === 0) amount = num;
     else if (p.toLowerCase() === 'cash') mode = 'Cash';
     else if (p.toLowerCase() === 'online') mode = 'Online';
     else remainingParts.push(p);
   });
 
-  let catIndex = -1;
-  for (let ci = 0; ci < remainingParts.length; ci++) {
-    if (CAT_MAP[remainingParts[ci].toLowerCase()]) { catIndex = ci; break; }
-  }
-  if (catIndex !== -1) {
-    category = CAT_MAP[remainingParts[catIndex].toLowerCase()];
-    const others = remainingParts.filter((_, i) => i !== catIndex);
+  if (activeCategoryTag && CAT_MAP[activeCategoryTag.toLowerCase()]) {
+    category = CAT_MAP[activeCategoryTag.toLowerCase()];
     if (category === 'Given to' || category === 'Taken from') {
-      person = ($('budget-person').value.trim()) || others.join(' ') || 'Unknown';
+      person = ($('budget-person').value.trim()) || remainingParts.join(' ') || 'Unknown';
     } else {
-      item = others.join(' ');
+      item = remainingParts.join(' ');
     }
-  } else if (remainingParts.length > 0) {
-    // treat entire non-number remainder as category/item
-    category = remainingParts.join(' ');
+  } else {
+    let catIndex = -1;
+    for (let ci = 0; ci < remainingParts.length; ci++) {
+      if (CAT_MAP[remainingParts[ci].toLowerCase()]) { catIndex = ci; break; }
+    }
+    if (catIndex !== -1) {
+      category = CAT_MAP[remainingParts[catIndex].toLowerCase()];
+      const others = remainingParts.filter((_, i) => i !== catIndex);
+      if (category === 'Given to' || category === 'Taken from') {
+        person = ($('budget-person').value.trim()) || others.join(' ') || 'Unknown';
+      } else {
+        item = others.join(' ');
+      }
+    } else if (remainingParts.length > 0) {
+      category = remainingParts.join(' ');
+    }
   }
 
   if (amount <= 0) { toast('ERR: Enter a valid amount', 'red'); return; }
@@ -374,7 +381,7 @@ window.addBudgetEntry = function() {
   $('budget-person').value = '';
   $('budget-person-container').style.display = 'none';
 
-  // Reset active cat button highlight
+  activeCategoryTag = null;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
 
   toast(`RECORDED: ${category}${person?' ('+person+')':''} ₹${amount} · ${mode}`, 'green');
@@ -389,15 +396,16 @@ window.deleteBudget = function(id) {
 };
 
 window.budgetSelectCat = function(cat, btn) {
-  const inp = $('budget-item');
-  const parts = inp.value.trim().split(/\s+/).filter(Boolean);
-  const catKeys = Object.keys(CAT_MAP);
-  const filtered = parts.filter(p => !catKeys.includes(p.toLowerCase()));
-  filtered.push(cat);
-  inp.value = filtered.join(' ');
-  inp.focus();
-  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
-  btn.classList.add('active');
+  if (activeCategoryTag === cat) {
+    activeCategoryTag = null;
+    btn.classList.remove('active');
+  } else {
+    activeCategoryTag = cat;
+    document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+  }
+  checkBudgetPerson();
+  $('budget-item').focus();
 };
 
 window.clearBalance = function() {
