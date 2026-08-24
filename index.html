@@ -59,29 +59,29 @@ tailwind.config = {
     height: 8px;
   }
   ::-webkit-scrollbar-track {
-    background: var(--neu-bg);
-    border-radius: 4px;
-    margin-block: 10px;
-  }
-  ::-webkit-scrollbar-thumb {
-    background: var(--neu-track);
-    border-radius: 4px;
-  }
-  .panel-hidden {
-    display: none !important;
-  }
+      background: var(--neu-bg);
+      border-radius: 0px;
+      margin-block: 10px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--neu-track);
+      border-radius: 0px;
+    }
+    .panel-hidden {
+      display: none !important;
+    }
   
-  /* Toasts */
-    #toasts { position: fixed; bottom: 90px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 9999; }
-    .toast { padding: 12px 16px; background: var(--neu-text); color: var(--neu-bg); border: none; font-size: 13px; font-weight: 500; border-radius: 16px; animation: slideUp 150ms ease-out forwards; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
-    @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    /* Toasts */
+      #toasts { position: fixed; bottom: 90px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 9999; }
+      .toast { padding: 12px 16px; background: var(--neu-text); color: var(--neu-bg); border: none; font-size: 13px; font-weight: 500; border-radius: 0px; animation: slideUp 150ms ease-out forwards; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+      @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-    /* Tab / Cat Buttons */
-      .tab-btn { padding: 8px 20px; font-weight: 600; font-size: 11px; border: 1px solid var(--neu-track); border-radius: 16px; transition: all 150ms; background: var(--neu-bg); color: var(--neu-text); cursor: pointer; }
-  .tab-btn.active { background: var(--neu-box); color: var(--neu-highlight); border-color: var(--neu-highlight); }
-  .cat-btn { font-size: 10px; font-weight: 500; padding: 6px 14px; color: var(--neu-accent); background: var(--neu-bg); border: 1px solid var(--neu-track); border-radius: 9999px; transition: all 120ms; cursor: pointer; }
-  .cat-btn:hover, .cat-btn.active { color: var(--neu-highlight); background: var(--neu-box); border-color: var(--neu-highlight); }
-</style>
+      /* Tab / Cat Buttons */
+    .tab-btn { padding: 8px 20px; font-weight: 600; font-size: 11px; border: 1px solid var(--neu-track); border-radius: 0px; transition: all 150ms; background: var(--neu-bg); color: var(--neu-text); cursor: pointer; }
+    .tab-btn.active { background: var(--neu-box); color: var(--neu-highlight); border-color: var(--neu-highlight); }
+    .cat-btn { font-size: 10px; font-weight: 500; padding: 6px 14px; color: var(--neu-accent); background: var(--neu-bg); border: 1px solid var(--neu-track); border-radius: 0px; transition: all 120ms; cursor: pointer; }
+    .cat-btn:hover, .cat-btn.active { color: var(--neu-highlight); background: var(--neu-box); border-color: var(--neu-highlight); }
+  </style>
 <script>
   function initTheme() {
     if (localStorage.getItem('budget-theme') === 'dark') {
@@ -110,11 +110,11 @@ tailwind.config = {
 
 <!-- TOP RIGHT CONTROLS -->
 <div class="fixed top-6 right-6 z-50 flex items-center gap-3">
-  <div id="sync-dot" class="w-2 h-2 rounded-full bg-neu-accent shrink-0 transition-colors duration-300 shadow-sm" title="Sync status"></div>
-  <button id="btn-undo" class="w-10 h-10 flex items-center justify-center rounded-xl bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Undo Last Action">
+  <div id="sync-dot" class="w-2 h-2 rounded-none bg-neu-accent shrink-0 transition-colors duration-300 shadow-sm" title="Sync status"></div>
+  <button id="btn-undo" class="w-10 h-10 flex items-center justify-center rounded-none bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Undo Last Action">
     <i class="fa-solid fa-arrow-rotate-left"></i>
   </button>
-  <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Toggle Theme">
+  <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-none bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Toggle Theme">
     <i class="fa-solid fa-moon"></i>
   </button>
 </div>
@@ -132,29 +132,29 @@ tailwind.config = {
   </div>
 
   <!-- SUMMARY -->
-    <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-      <div class="bg-neu-box p-3.5 rounded-2xl flex flex-col justify-center relative">
-        <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1 flex justify-between items-center">
-          <span>TOTAL BALANCE</span>
-          <button onclick="clearBalance()" class="text-neu-accent hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Clear Balance to Zero">
-            <i class="fa-solid fa-eraser text-[12px]"></i>
-          </button>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+        <div class="bg-neu-box p-3.5 rounded-none flex flex-col justify-center relative">
+          <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1 flex justify-between items-center">
+            <span>TOTAL BALANCE</span>
+            <button onclick="clearBalance()" class="text-neu-accent hover:text-red-500 transition-colors p-1 -mt-1 -mr-1" title="Clear Balance to Zero">
+              <i class="fa-solid fa-eraser text-[12px]"></i>
+            </button>
+          </div>
+          <div class="font-mono text-2xl font-bold text-neu-text"><span id="budget-total">₹0</span></div>
         </div>
-        <div class="font-mono text-2xl font-bold text-neu-text"><span id="budget-total">₹0</span></div>
+      <div class="bg-neu-box p-3.5 rounded-none flex flex-col justify-center">
+        <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1">ONLINE</div>
+        <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-online">₹0</span></div>
       </div>
-    <div class="bg-neu-box p-3.5 rounded-2xl flex flex-col justify-center">
-      <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1">ONLINE</div>
-      <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-online">₹0</span></div>
+      <div class="bg-neu-box p-3.5 rounded-none flex flex-col justify-center">
+        <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1">CASH</div>
+        <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-cash">₹0</span></div>
+      </div>
+      <div class="bg-neu-box p-3.5 rounded-none flex flex-col justify-center">
+        <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1 text-red-500">THIS MONTH</div>
+        <div class="font-mono text-xl font-bold text-red-500"><span id="budget-month">₹0</span></div>
+      </div>
     </div>
-    <div class="bg-neu-box p-3.5 rounded-2xl flex flex-col justify-center">
-      <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1">CASH</div>
-      <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-cash">₹0</span></div>
-    </div>
-    <div class="bg-neu-box p-3.5 rounded-2xl flex flex-col justify-center">
-      <div class="text-[9px] font-semibold text-neu-accent uppercase tracking-widest mb-1 text-red-500">THIS MONTH</div>
-      <div class="font-mono text-xl font-bold text-red-500"><span id="budget-month">₹0</span></div>
-    </div>
-  </div>
 
   <!-- CATEGORY QUICK BUTTONS -->
     <div class="flex flex-wrap gap-2" id="cat-bar">
@@ -205,7 +205,7 @@ tailwind.config = {
     <span class="font-mono text-neu-highlight text-2xl leading-none font-light pl-2">›</span>
     <input id="budget-item" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none focus:!ring-0 px-2 py-2 font-sans text-lg text-neu-text placeholder:text-neu-accent/50 placeholder:font-sans" placeholder="Amount + item..." autocomplete="off"
       onkeydown="if(event.key==='Enter')addBudgetEntry()">
-    <button class="w-12 h-12 flex items-center justify-center rounded-xl bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
+    <button class="w-12 h-12 flex items-center justify-center rounded-none bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
       <i class="fa-solid fa-plus"></i>
     </button>
   </div>
@@ -251,7 +251,7 @@ const CAT_MAP = {
 function setSyncDot(state) {
   const d = document.getElementById('sync-dot');
   if (!d) return;
-  d.className = 'w-2 h-2 rounded-full shrink-0 transition-colors duration-300 shadow-sm ' + 
+  d.className = 'w-2 h-2 rounded-none shrink-0 transition-colors duration-300 shadow-sm ' + 
                 (state === 'synced' ? 'bg-green-400' : state === 'syncing' ? 'bg-neu-accent animate-pulse' : 'bg-red-500');
   d.title = state === 'synced' ? 'Synced' : state === 'syncing' ? 'Syncing…' : 'Sync error';
 }
@@ -508,7 +508,7 @@ window.renderBudget = function() {
     if (dayStr !== lastDay) {
           if (lastDay !== '') htmlStr += `</ul></div>`;
           htmlStr += `
-            <div class="bg-neu-box p-4 rounded-2xl">
+            <div class="bg-neu-box p-4 rounded-none">
               <h4 class="text-[10px] font-medium text-neu-text pb-2 mb-2.5 border-b border-neu-track uppercase tracking-widest font-mono flex items-center gap-2">
                 <i class="fa-regular fa-calendar text-neu-highlight"></i> ${dayStr}
               </h4>
@@ -518,7 +518,7 @@ window.renderBudget = function() {
         }
 
         htmlStr += `
-          <li class="flex items-center justify-between text-xs text-neu-text bg-neu-bg rounded-xl p-2.5 shadow-sm border border-neu-track/30">
+          <li class="flex items-center justify-between text-xs text-neu-text bg-neu-bg rounded-none p-2.5 shadow-sm border border-neu-track/30">
             <div class="flex flex-col gap-1.5 flex-1 min-w-0 pr-2">
           <span class="font-bold text-[13px] text-neu-text truncate">${displayTitle}</span>
           <div class="flex gap-2 items-center flex-wrap">
@@ -606,27 +606,27 @@ function renderStats(mode) {
     g.items.forEach(b => { catTotals[b.category] = (catTotals[b.category] || 0) + b.amount; grandTotal += b.amount; });
 
     html += `
-          <div class="bg-neu-box p-4 rounded-2xl flex flex-col">
+          <div class="bg-neu-box p-4 rounded-none flex flex-col">
             <h4 class="text-[10px] font-medium ${textColorClass} pb-2 mb-3 border-b border-neu-track uppercase tracking-widest font-mono flex items-center gap-2">
               <i class="fa-solid fa-chart-pie"></i> ${g.label}
             </h4>
             <div class="flex flex-col gap-3 flex-1">
         `;
 
-    Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).forEach(([cat, amt]) => {
-      const pct = Math.round((amt / grandTotal) * 100);
-      html += `
-        <div class="flex flex-col gap-1.5">
-          <div class="flex justify-between items-end">
-            <span class="font-mono text-[10px] text-neu-accent uppercase font-semibold">${cat}</span>
-            <span class="font-mono text-[11px] text-neu-text font-bold">₹${amt.toLocaleString('en-IN')} <span class="text-neu-accent font-normal">(${pct}%)</span></span>
-          </div>
-          <div class="w-full bg-neu-track h-1.5 rounded-full overflow-hidden">
-            <div class="h-full rounded-full ${barColorClass} transition-all duration-500 ease-out" style="width: ${pct}%"></div>
-          </div>
-        </div>
-      `;
-    });
+        Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).forEach(([cat, amt]) => {
+          const pct = Math.round((amt / grandTotal) * 100);
+          html += `
+            <div class="flex flex-col gap-1.5">
+              <div class="flex justify-between items-end">
+                <span class="font-mono text-[10px] text-neu-accent uppercase font-semibold">${cat}</span>
+                <span class="font-mono text-[11px] text-neu-text font-bold">₹${amt.toLocaleString('en-IN')} <span class="text-neu-accent font-normal">(${pct}%)</span></span>
+              </div>
+              <div class="w-full bg-neu-track h-1.5 rounded-none overflow-hidden">
+                <div class="h-full rounded-none ${barColorClass} transition-all duration-500 ease-out" style="width: ${pct}%"></div>
+              </div>
+            </div>
+          `;
+        });
 
     html += `
         </div>
