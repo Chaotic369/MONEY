@@ -6,170 +6,177 @@
 <title>Budget Tracker</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 <script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        neu: {
+          bg: 'var(--neu-bg)',
+          box: 'var(--neu-box)',
+          track: 'var(--neu-track)',
+          text: 'var(--neu-text)',
+          accent: 'var(--neu-accent)',
+          highlight: 'var(--neu-highlight)'
+        }
+      },
+      fontFamily: {
+        sans: ['Open Sans', 'sans-serif'],
+        mono: ['JetBrains Mono', 'monospace']
+      }
+    }
+  }
+}
+</script>
 <style>
-:root {
-  --blue:#3b82f6; --green:#22c55e; --red:#ef4444;
-  --amber:#f59e0b; --purple:#a855f7; --teal:#14b8a6;
-  --bg:#000; --surface:#0a0a0a; --elevated:#111; --panel:#0a0a0a;
-  --border:#222; --tp:#fff; --tm:#9ca3af; --td:#6b7280;
-  --shadow:0 8px 24px rgba(0,0,0,.8);
-}
-:root.light {
-  --blue:#4f46e5; --green:#059669; --red:#dc2626;
-  --amber:#d97706; --purple:#7c3aed; --teal:#0d9488;
-  --bg:#fefaf0; --surface:#fefaf0; --elevated:#f3eee1; --panel:#fefaf0;
-  --border:#e7e2d4; --tp:#292524; --tm:#57534e; --td:#a8a29e;
-  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
-}
-*{box-sizing:border-box;transition:background-color 150ms,border-color 150ms,color 150ms}
-body{background:var(--bg);color:var(--tp);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;min-height:100vh;margin:0;overflow-x:hidden}
-::-webkit-scrollbar{width:6px;height:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
-input,textarea,select,button{outline:none;font-family:inherit}
-input,select{background:transparent!important;border:1px solid var(--border)!important;color:var(--tp);padding:8px 16px;font-size:13px;border-radius:8px;transition:all 150ms}
-input:focus,select:focus{border-color:var(--tm)!important}
-button{cursor:pointer;border-radius:9999px}
-.btn{border:none!important;color:var(--tm);padding:8px 16px;font-size:12px;font-weight:500;background:var(--elevated);transition:all 120ms;border-radius:9999px}
-.btn:hover{color:var(--tp);background:var(--border)}
-.btn-amber{color:#fff!important;background:var(--amber)!important}.btn-amber:hover{opacity:.9}
-.btn-blue{color:#fff!important;background:var(--blue)!important}.btn-blue:hover{opacity:.9}
-.btn-green{color:#fff!important;background:var(--green)!important}.btn-green:hover{opacity:.9}
-.btn-red{color:#fff!important;background:var(--red)!important}.btn-red:hover{opacity:.9}
-.btn-teal{color:#fff!important;background:var(--teal)!important}.btn-teal:hover{opacity:.9}
-.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500}
-.label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--tm);letter-spacing:.05em}
-.card{background:transparent;border:none;border-radius:0}
+  :root {
+    --neu-bg: #fbfaf6;
+    --neu-box: #f2f0e6;
+    --neu-track: #e8e5d8;
+    --neu-text: #000000;
+    --neu-accent: #666666;
+    --neu-highlight: #000000;
+  }
+  .dark-mode {
+    --neu-bg: #000432;
+    --neu-box: #080c4a;
+    --neu-track: #15195c;
+    --neu-text: #e2e8f0;
+    --neu-accent: #818cf8;
+    --neu-highlight: #c7d2fe;
+  }
+  body {
+    background-color: var(--neu-bg);
+    color: var(--neu-text);
+    font-weight: 400;
+    overflow-x: hidden;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: var(--neu-bg);
+    border-radius: 4px;
+    margin-block: 10px;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: var(--neu-track);
+    border-radius: 4px;
+  }
+  .panel-hidden {
+    display: none !important;
+  }
+  
+  /* Toasts */
+  #toasts { position: fixed; bottom: 90px; right: 16px; display: flex; flex-direction: column; gap: 6px; z-index: 9999; }
+  .toast { padding: 12px 16px; background: var(--neu-text); color: var(--neu-bg); border: none; font-size: 13px; font-weight: 500; border-radius: 16px; animation: slideUp 150ms ease-out forwards; max-width: 320px; box-shadow: 0 4px 16px rgba(0,0,0,0.2); }
+  @keyframes slideUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
 
-/* Nav */
-nav{background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;position:sticky;top:0;z-index:20}
+  /* Floating UI Overrides */
+  .floating-bar { position: fixed; bottom: 20px; right: 20px; width: 340px; max-width: calc(100vw - 32px); background: var(--neu-box); border: 1px solid var(--neu-track); border-radius: 9999px; padding: 6px 12px; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 100; transition: all 0.3s; }
+  .floating-bar input { flex: 1; background: transparent; border: none; outline: none; padding: 0; font-size: 12px; color: var(--neu-text); min-width: 0; font-family: 'JetBrains Mono', monospace; }
+  
+  #budget-person-container { position: fixed; bottom: 76px; right: 20px; width: 340px; max-width: calc(100vw - 32px); background: var(--neu-box); border: 1px solid var(--neu-track); border-radius: 9999px; padding: 6px 12px; display: none; align-items: center; gap: 8px; box-shadow: 0 4px 16px rgba(0,0,0,0.1); z-index: 99; transition: all 0.3s; }
+  #budget-person-container input { flex: 1; background: transparent; border: none; outline: none; padding: 0; font-size: 12px; color: var(--neu-text); min-width: 0; font-family: 'JetBrains Mono', monospace; }
 
-/* Toast */
-#toasts{position:fixed;bottom:90px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:9999}
-.toast{padding:12px 16px;background:var(--surface);border:none;border-left:4px solid;font-size:13px;font-weight:500;box-shadow:var(--shadow);border-radius:16px;animation:slideUp 150ms ease-out forwards;max-width:320px;color:var(--tp)!important}
-.toast.green{border-left-color:var(--green)}
-.toast.red{border-left-color:var(--red)}
-.toast.blue{border-left-color:var(--blue)}
-.toast.amber{border-left-color:var(--amber)}
-@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-/* Floating bar */
-.floating-bar{position:fixed;bottom:20px;right:20px;width:340px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px!important;padding:6px 12px!important;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.4)!important;z-index:100}
-.floating-bar input{flex:1;background:transparent!important;border:none!important;outline:none!important;padding:0!important;font-size:12px!important;color:var(--tp)!important;min-width:0}
-.floating-bar button{padding:4px 12px!important;font-size:10px!important;min-height:26px}
-
-/* Person bar */
-#budget-person-container{position:fixed;bottom:76px;right:20px;width:340px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px!important;padding:6px 12px!important;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.4)!important;z-index:99}
-#budget-person-container input{flex:1;background:transparent!important;border:none!important;outline:none!important;padding:0!important;font-size:12px!important;color:var(--tp)!important;min-width:0}
-
-/* Main layout */
-main{max-width:900px;margin:0 auto;padding:20px 20px 140px;display:flex;flex-direction:column;gap:14px}
-
-/* Summary cards */
-.summary-row{display:flex;gap:10px;flex-wrap:wrap}
-.summary-card{flex:1;min-width:120px;padding:14px;background:var(--surface);border-radius:16px;border-left:3px solid}
-
-/* Cat quick buttons */
-.cat-bar{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
-.cat-btn{font-size:10px;padding:4px 10px;color:var(--tm);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px;transition:all 120ms}
-.cat-btn:hover,.cat-btn.active{color:var(--amber);background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3)!important}
-
-/* Tab buttons */
-.tab-row{display:flex;gap:4px}
-.tab-btn{font-size:10px;padding:5px 14px;border-radius:9999px;border:none;background:var(--surface);color:var(--td);font-weight:600}
-.tab-btn.active{color:var(--amber);background:rgba(245,158,11,.1)}
-
-/* Panels */
-.panel{background:var(--surface);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:0}
-.panel-hidden{display:none!important}
-
-/* Ledger entry */
-.tx-entry{display:flex;justify-content:space-between;align-items:center;border-left:2px solid;padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0}
-.date-header{font-size:9px;color:var(--td);letter-spacing:.08em;margin-top:12px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.05)}
-
-/* Bar chart row */
-.bar-row{margin-bottom:8px}
-.bar-track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:3px}
-.bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
-
-/* Sync dot */
-.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--td);flex-shrink:0;transition:background .3s}
-.sync-dot.synced{background:var(--green)}
-.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
-.sync-dot.error{background:var(--red)}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-
-/* Undo button */
-#btn-undo{padding:3px 8px;font-size:10px}
-
-@media(max-width:600px){
-  .summary-row{flex-direction:column}
-  .floating-bar{width:calc(100vw - 32px)}
-  #budget-person-container{width:calc(100vw - 32px)}
-}
+  /* Tab / Cat Buttons */
+  .tab-btn { padding: 8px 20px; font-weight: 600; font-size: 11px; border: 1px solid var(--neu-track); border-radius: 16px; transition: all 150ms; background: var(--neu-bg); color: var(--neu-text); cursor: pointer; }
+  .tab-btn.active { background: var(--neu-box); color: var(--neu-highlight); border-color: var(--neu-highlight); }
+  .cat-btn { font-size: 10px; font-weight: 500; padding: 6px 14px; color: var(--neu-accent); background: var(--neu-bg); border: 1px solid var(--neu-track); border-radius: 9999px; transition: all 120ms; cursor: pointer; }
+  .cat-btn:hover, .cat-btn.active { color: var(--neu-highlight); background: var(--neu-box); border-color: var(--neu-highlight); }
 </style>
+<script>
+  function initTheme() {
+    if (localStorage.getItem('budget-theme') === 'dark') {
+      document.documentElement.classList.add('dark-mode');
+    }
+  }
+  initTheme();
+  function toggleTheme() {
+    const root = document.documentElement;
+    root.classList.toggle('dark-mode');
+    const isDark = root.classList.contains('dark-mode');
+    localStorage.setItem('budget-theme', isDark ? 'dark' : 'light');
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) {
+      icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+    }
+  }
+  window.addEventListener('DOMContentLoaded', () => {
+    const isDark = document.documentElement.classList.contains('dark-mode');
+    const icon = document.querySelector('#theme-toggle i');
+    if (icon) icon.className = isDark ? 'fa-solid fa-sun' : 'fa-solid fa-moon';
+  });
+</script>
 </head>
-<body>
+<body class="font-sans antialiased min-h-screen pb-12 transition-colors duration-300">
 
-<!-- NAV -->
-<nav>
-  <div style="display:flex;align-items:center;gap:12px">
-    <span class="mono" style="font-weight:800;color:var(--amber);font-size:15px;letter-spacing:.05em">
-      <i class="fa-solid fa-indian-rupee-sign" style="font-size:13px"></i> BUDGET
-    </span>
-    <div id="sync-dot" class="sync-dot" title="Sync status"></div>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px">
-    <button class="btn" id="btn-undo" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
-    <button class="btn" onclick="document.documentElement.classList.toggle('light')" title="Toggle theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
-  </div>
-</nav>
+<!-- TOP RIGHT CONTROLS -->
+<div class="fixed top-6 right-6 z-50 flex items-center gap-3">
+  <div id="sync-dot" class="w-2 h-2 rounded-full bg-neu-accent shrink-0 transition-colors duration-300 shadow-sm" title="Sync status"></div>
+  <button id="btn-undo" class="w-10 h-10 flex items-center justify-center rounded-xl bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Undo Last Action">
+    <i class="fa-solid fa-arrow-rotate-left"></i>
+  </button>
+  <button id="theme-toggle" onclick="toggleTheme()" class="w-10 h-10 flex items-center justify-center rounded-xl bg-neu-box text-neu-text hover:text-neu-highlight shadow-sm transition-all" title="Toggle Theme">
+    <i class="fa-solid fa-moon"></i>
+  </button>
+</div>
 
 <div id="toasts"></div>
 
 <!-- PERSON INPUT -->
 <div id="budget-person-container">
-  <span class="mono" style="color:var(--tm);font-size:13px">@</span>
+  <span class="font-mono text-neu-accent text-sm">@</span>
   <input id="budget-person" type="text" placeholder="Person name...">
 </div>
 
 <!-- FLOATING ENTRY BAR -->
 <div class="floating-bar">
-  <span class="mono" style="color:var(--amber);font-size:18px;line-height:1;padding-bottom:2px">›</span>
-  <input id="budget-item" type="text" class="mono" placeholder="Amount + item..." autocomplete="off"
+  <span class="font-mono text-neu-highlight text-lg leading-none pb-0.5">›</span>
+  <input id="budget-item" type="text" placeholder="Amount + item..." autocomplete="off"
     onkeydown="if(event.key==='Enter')addBudgetEntry()"
     oninput="checkBudgetPerson()">
-  <button class="btn btn-amber" onclick="addBudgetEntry()"><i class="fa-solid fa-plus"></i></button>
+  <button class="w-7 h-7 flex items-center justify-center rounded-full bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity" onclick="addBudgetEntry()">
+    <i class="fa-solid fa-plus text-xs"></i>
+  </button>
 </div>
 
 <!-- MAIN -->
-<main>
+<main class="max-w-4xl mx-auto px-4 py-8 pt-12 flex flex-col gap-8">
+  
+  <!-- HEADER -->
+  <div class="mb-2">
+    <span class="font-mono font-bold text-neu-highlight text-xl tracking-wide">
+      <i class="fa-solid fa-indian-rupee-sign text-lg"></i> BUDGET
+    </span>
+  </div>
 
   <!-- SUMMARY -->
-  <div class="summary-row">
-    <div class="summary-card" style="border-color:var(--tp)">
-      <div class="label">TOTAL BALANCE</div>
-      <div class="mono" style="font-size:26px;font-weight:800;margin-top:6px"><span id="budget-total" style="color:var(--tp)">₹0</span></div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+    <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
+      <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1">TOTAL BALANCE</div>
+      <div class="font-mono text-2xl font-bold text-neu-text"><span id="budget-total">₹0</span></div>
     </div>
-    <div class="summary-card" style="border-color:var(--blue)">
-      <div class="label">ONLINE</div>
-      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-online" style="color:var(--tp)">₹0</span></div>
+    <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
+      <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1">ONLINE</div>
+      <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-online">₹0</span></div>
     </div>
-    <div class="summary-card" style="border-color:var(--amber)">
-      <div class="label">CASH</div>
-      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-cash" style="color:var(--tp)">₹0</span></div>
+    <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
+      <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1">CASH</div>
+      <div class="font-mono text-xl font-bold text-neu-text"><span id="budget-cash">₹0</span></div>
     </div>
-    <div class="summary-card" style="border-color:var(--red)">
-      <div class="label">THIS MONTH</div>
-      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-month" style="color:var(--red)">₹0</span></div>
+    <div class="bg-neu-box p-5 rounded-[20px] flex flex-col justify-center">
+      <div class="text-[10px] font-semibold text-neu-accent uppercase tracking-widest mb-1 text-red-500">THIS MONTH</div>
+      <div class="font-mono text-xl font-bold text-red-500"><span id="budget-month">₹0</span></div>
     </div>
   </div>
 
   <!-- CATEGORY QUICK BUTTONS -->
-  <div class="cat-bar" id="cat-bar">
+  <div class="flex flex-wrap gap-2" id="cat-bar">
     <button class="cat-btn" data-cat="v">v · VEG</button>
     <button class="cat-btn" data-cat="f">f · FRUIT</button>
     <button class="cat-btn" data-cat="m">m · MILK</button>
@@ -181,31 +188,31 @@ main{max-width:900px;margin:0 auto;padding:20px 20px 140px;display:flex;flex-dir
   </div>
 
   <!-- TABS -->
-  <div class="tab-row">
+  <div class="flex gap-3">
     <button class="tab-btn active" id="tab-ledger" onclick="switchTab('ledger')">LEDGER</button>
     <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">ANALYTICS</button>
   </div>
 
   <!-- LEDGER PANEL -->
-  <div class="panel" id="panel-ledger">
-    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
-      <div class="mono" style="font-size:10px;color:var(--tp);letter-spacing:.08em">
-        TRANSACTION LEDGER <span id="ledger-month-label" style="color:var(--td);margin-left:4px"></span>
+  <div id="panel-ledger" class="flex flex-col gap-4">
+    <div class="flex justify-between items-end px-2">
+      <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">
+        TRANSACTION LEDGER <span id="ledger-month-label" class="text-neu-accent ml-2"></span>
       </div>
     </div>
-    <div id="budget-list"></div>
+    <div id="budget-list" class="flex flex-col gap-6"></div>
   </div>
 
   <!-- STATS PANEL -->
-  <div class="panel panel-hidden" id="panel-stats">
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
-      <div class="mono" style="font-size:10px;color:var(--tp);letter-spacing:.08em">ANALYTICS</div>
-      <div style="display:flex;gap:4px">
-        <button class="tab-btn active" id="bstat-monthly" onclick="switchStatMode('monthly')">MONTHLY</button>
-        <button class="tab-btn" id="bstat-daily" onclick="switchStatMode('daily')">DAILY</button>
+  <div id="panel-stats" class="panel-hidden flex flex-col gap-4">
+    <div class="flex items-center justify-between px-2">
+      <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">ANALYTICS</div>
+      <div class="flex gap-2">
+        <button class="tab-btn active !py-1.5 !px-3 !text-[10px]" id="bstat-monthly" onclick="switchStatMode('monthly')">MONTHLY</button>
+        <button class="tab-btn !py-1.5 !px-3 !text-[10px]" id="bstat-daily" onclick="switchStatMode('daily')">DAILY</button>
       </div>
     </div>
-    <div id="budget-stats-content"></div>
+    <div id="budget-stats-content" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
   </div>
 
 </main>
@@ -248,7 +255,9 @@ const CAT_MAP = {
 // ─── SYNC ─────────────────────────────────────
 function setSyncDot(state) {
   const d = document.getElementById('sync-dot');
-  d.className = 'sync-dot ' + state;
+  if (!d) return;
+  d.className = 'w-2 h-2 rounded-full shrink-0 transition-colors duration-300 shadow-sm ' + 
+                (state === 'synced' ? 'bg-green-400' : state === 'syncing' ? 'bg-neu-accent animate-pulse' : 'bg-red-500');
   d.title = state === 'synced' ? 'Synced' : state === 'syncing' ? 'Syncing…' : 'Sync error';
 }
 
@@ -293,8 +302,11 @@ function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padSta
 function toast(msg, type = 'blue') {
   const c = $('toasts');
   const el = document.createElement('div');
-  el.className = `toast ${type}`;
+  el.className = 'toast';
   el.textContent = msg;
+  if (type === 'red') el.style.color = '#ef4444';
+  if (type === 'green') el.style.color = '#22c55e';
+  if (type === 'amber') el.style.color = '#f59e0b';
   c.appendChild(el);
   setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(10px)'; setTimeout(()=>el.remove(),200); }, 3000);
 }
@@ -407,60 +419,72 @@ window.renderBudget = function() {
     const el = $(id);
     if (!el) return;
     el.textContent = (val < 0 ? '-₹' : '₹') + Math.abs(val).toLocaleString('en-IN');
-    if (redNeg) el.style.color = val >= 0 ? 'var(--green)' : 'var(--red)';
+    if (redNeg) el.className = val >= 0 ? 'text-green-500' : 'text-red-500';
   }
   setMoney('budget-total', total);
   setMoney('budget-online', onlineTotal);
   setMoney('budget-cash', cashTotal);
   if ($('budget-month')) { $('budget-month').textContent = '₹' + monthTotal.toLocaleString('en-IN'); }
 
-  // Month label
-  if ($('ledger-month-label')) $('ledger-month-label').textContent = '· ' + MONTH_NAMES[curMonth] + ' ' + curYear;
+  if ($('ledger-month-label')) $('ledger-month-label').textContent = '• ' + MONTH_NAMES[curMonth] + ' ' + curYear;
 
-  // Ledger — current month only, newest first
   const entries = [...(S.budget || [])]
     .filter(b => { const d = new Date(b.date); return d.getMonth() === curMonth && d.getFullYear() === curYear; })
     .reverse();
 
   if (!entries.length) {
-    list.innerHTML = '<div class="mono" style="color:var(--td);font-size:11px;padding:8px 4px">› no transactions this month.</div>';
+    list.innerHTML = '<div class="font-mono text-neu-accent text-xs p-2">› no transactions this month.</div>';
     return;
   }
 
   let lastDay = '';
+  let htmlStr = '';
+
   entries.forEach(b => {
     const d = new Date(b.date);
     const dayStr = d.getDate() + ' ' + MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear();
     const isIncome = b.category.toLowerCase() === 'taken from';
-    const color = isIncome ? 'var(--green)' : 'var(--red)';
+    const colorText = isIncome ? 'text-green-500' : 'text-red-500';
     const amtStr = (isIncome ? '+' : '-') + '₹' + b.amount.toLocaleString('en-IN');
     const displayTitle = b.item || b.person || b.category;
+    const timeStr = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
 
     if (dayStr !== lastDay) {
-      list.innerHTML += `<div class="mono date-header">${dayStr}</div>`;
+      if (lastDay !== '') htmlStr += `</ul></div>`;
+      htmlStr += `
+        <div class="bg-neu-box p-5 rounded-[20px]">
+          <h4 class="text-[11px] font-medium text-neu-text pb-2 mb-3 border-b border-neu-track uppercase tracking-widest font-mono flex items-center gap-2">
+            <i class="fa-regular fa-calendar text-neu-highlight"></i> ${dayStr}
+          </h4>
+          <ul class="space-y-2 min-h-[10px]">
+      `;
       lastDay = dayStr;
     }
 
-    const timeStr = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-
-    list.innerHTML += `
-      <div class="tx-entry" style="border-color:${color}">
-        <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1">
-          <span style="font-weight:600;font-size:12px;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayTitle}</span>
-          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
-            <span class="mono" style="font-size:9px;color:var(--tm)">${b.category}</span>
-            <span style="color:var(--td);font-size:9px">·</span>
-            <span class="mono" style="font-size:9px;color:${b.mode==='Cash'?'var(--amber)':'var(--blue)'}">${b.mode.toUpperCase()}</span>
-            <span style="color:var(--td);font-size:9px">·</span>
-            <span class="mono" style="font-size:9px;color:var(--td)">${timeStr}</span>
+    htmlStr += `
+      <li class="flex items-center justify-between text-xs text-neu-text bg-neu-bg rounded-xl p-3 shadow-sm border border-neu-track/30">
+        <div class="flex flex-col gap-1.5 flex-1 min-w-0 pr-2">
+          <span class="font-bold text-[13px] text-neu-text truncate">${displayTitle}</span>
+          <div class="flex gap-2 items-center flex-wrap">
+            <span class="font-mono text-[10px] text-neu-accent uppercase">${b.category}</span>
+            <span class="text-neu-track">•</span>
+            <span class="font-mono text-[10px] ${b.mode==='Cash'?'text-amber-500':'text-blue-500'}">${b.mode.toUpperCase()}</span>
+            <span class="text-neu-track">•</span>
+            <span class="font-mono text-[10px] text-neu-accent">${timeStr}</span>
           </div>
         </div>
-        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
-          <span class="mono" style="font-weight:700;font-size:15px;color:${color}">${amtStr}</span>
-          <button class="btn" style="padding:4px 7px;font-size:11px;color:var(--td);background:transparent" onclick="deleteBudget('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+        <div class="flex items-center gap-3 shrink-0">
+          <span class="font-mono font-bold text-sm ${colorText}">${amtStr}</span>
+          <button class="text-neu-accent hover:text-red-500 transition-colors p-1" onclick="deleteBudget('${b.id}')" title="Delete">
+            <i class="fa-solid fa-xmark text-[13px]"></i>
+          </button>
         </div>
-      </div>`;
+      </li>
+    `;
   });
+
+  if (lastDay !== '') htmlStr += `</ul></div>`;
+  list.innerHTML = htmlStr;
 };
 
 // ─── STATS ────────────────────────────────────
@@ -486,7 +510,9 @@ function renderStats(mode) {
   container.innerHTML = '';
   const entries = S.budget || [];
   const now = new Date();
-  const barColor = mode === 'monthly' ? 'var(--amber)' : 'var(--teal)';
+  
+  const barColorClass = mode === 'monthly' ? 'bg-amber-500' : 'bg-teal-500';
+  const textColorClass = mode === 'monthly' ? 'text-amber-500' : 'text-teal-500';
 
   const groups = [];
 
@@ -515,6 +541,7 @@ function renderStats(mode) {
   }
 
   let hasData = false;
+  let html = '';
   groups.forEach(g => {
     if (!g.items.length) return;
     hasData = true;
@@ -522,28 +549,41 @@ function renderStats(mode) {
     let grandTotal = 0;
     g.items.forEach(b => { catTotals[b.category] = (catTotals[b.category] || 0) + b.amount; grandTotal += b.amount; });
 
-    let html = `<div style="margin-bottom:18px">
-      <div class="mono" style="font-size:10px;color:${barColor};letter-spacing:.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">${g.label}</div>`;
+    html += `
+      <div class="bg-neu-box p-5 rounded-[20px] flex flex-col">
+        <h4 class="text-[11px] font-medium ${textColorClass} pb-2 mb-4 border-b border-neu-track uppercase tracking-widest font-mono flex items-center gap-2">
+          <i class="fa-solid fa-chart-pie"></i> ${g.label}
+        </h4>
+        <div class="flex flex-col gap-4 flex-1">
+    `;
 
     Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).forEach(([cat, amt]) => {
       const pct = Math.round((amt / grandTotal) * 100);
-      html += `<div class="bar-row">
-        <div style="display:flex;justify-content:space-between">
-          <span class="mono" style="font-size:10px;color:var(--tm)">${cat.toUpperCase()}</span>
-          <span class="mono" style="font-size:10px;color:var(--tp)">₹${amt.toLocaleString('en-IN')} <span style="color:var(--td)">(${pct}%)</span></span>
+      html += `
+        <div class="flex flex-col gap-1.5">
+          <div class="flex justify-between items-end">
+            <span class="font-mono text-[10px] text-neu-accent uppercase font-semibold">${cat}</span>
+            <span class="font-mono text-[11px] text-neu-text font-bold">₹${amt.toLocaleString('en-IN')} <span class="text-neu-accent font-normal">(${pct}%)</span></span>
+          </div>
+          <div class="w-full bg-neu-track h-1.5 rounded-full overflow-hidden">
+            <div class="h-full rounded-full ${barColorClass} transition-all duration-500 ease-out" style="width: ${pct}%"></div>
+          </div>
         </div>
-        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
-      </div>`;
+      `;
     });
 
-    html += `<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
-        <span class="mono" style="font-size:10px;color:var(--td)">TOTAL SPENT</span>
-        <span class="mono" style="font-size:12px;font-weight:700;color:var(--red)">-₹${grandTotal.toLocaleString('en-IN')}</span>
-      </div></div>`;
-    container.innerHTML += html;
+    html += `
+        </div>
+        <div class="mt-5 pt-3 border-t border-neu-track flex justify-between items-center">
+          <span class="font-mono text-[10px] text-neu-accent uppercase tracking-wider font-semibold">Total Spent</span>
+          <span class="font-mono text-sm font-bold text-red-500">-₹${grandTotal.toLocaleString('en-IN')}</span>
+        </div>
+      </div>
+    `;
   });
-
-  if (!hasData) container.innerHTML = '<div class="mono" style="color:var(--td);font-size:11px;padding:8px 4px">› no data for this period.</div>';
+  
+  container.innerHTML = html;
+  if (!hasData) container.innerHTML = '<div class="font-mono text-neu-accent text-xs p-2">› no data for this period.</div>';
 }
 
 // ─── CAT BUTTONS ──────────────────────────────
