@@ -170,46 +170,46 @@ tailwind.config = {
     </div>
 
   <!-- TABS -->
-  <div class="flex gap-3">
-    <button class="tab-btn active" id="tab-ledger" onclick="switchTab('ledger')">LEDGER</button>
-    <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">ANALYTICS</button>
-  </div>
+    <div class="flex gap-3">
+      <button class="tab-btn active" id="tab-ledger" onclick="switchTab('ledger')">LEDGER</button>
+      <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">ANALYTICS</button>
+    </div>
 
-  <!-- LEDGER PANEL -->
-  <div id="panel-ledger" class="flex flex-col gap-4">
-    <div class="flex justify-between items-end px-2">
-      <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">
-        TRANSACTION LEDGER <span id="ledger-month-label" class="text-neu-accent ml-2"></span>
+    <!-- ENTRY BAR -->
+    <div class="w-full bg-neu-box border border-neu-track p-2 shadow-sm">
+      <div class="flex items-center gap-2 w-full">
+        <span class="font-mono text-neu-highlight text-xl leading-none font-light pl-2">›</span>
+        <input id="budget-item" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none focus:!ring-0 px-2 py-1 font-sans text-base text-neu-text placeholder:text-neu-accent/50 placeholder:font-sans" placeholder="Amount + item..." autocomplete="off"
+          onkeydown="if(event.key==='Enter')addBudgetEntry()">
+        <button class="w-10 h-10 flex items-center justify-center rounded-none bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
+          <i class="fa-solid fa-plus"></i>
+        </button>
       </div>
     </div>
-    <div id="budget-list" class="flex flex-col gap-6"></div>
-  </div>
 
-  <!-- STATS PANEL -->
-  <div id="panel-stats" class="panel-hidden flex flex-col gap-4">
-    <div class="flex items-center justify-between px-2">
-      <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">ANALYTICS</div>
-      <div class="flex gap-2">
-        <button class="tab-btn active !py-1.5 !px-3 !text-[10px]" id="bstat-monthly" onclick="switchStatMode('monthly')">MONTHLY</button>
-        <button class="tab-btn !py-1.5 !px-3 !text-[10px]" id="bstat-daily" onclick="switchStatMode('daily')">DAILY</button>
+    <!-- LEDGER PANEL -->
+    <div id="panel-ledger" class="flex flex-col gap-4">
+      <div class="flex justify-between items-end px-2">
+        <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">
+          TRANSACTION LEDGER <span id="ledger-month-label" class="text-neu-accent ml-2"></span>
+        </div>
       </div>
+      <div id="budget-list" class="flex flex-col gap-6"></div>
     </div>
-    <div id="budget-stats-content" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
-  </div>
 
-</main>
+    <!-- STATS PANEL -->
+    <div id="panel-stats" class="panel-hidden flex flex-col gap-4">
+      <div class="flex items-center justify-between px-2">
+        <div class="font-mono text-[11px] text-neu-text tracking-widest uppercase font-medium">ANALYTICS</div>
+        <div class="flex gap-2">
+          <button class="tab-btn active !py-1.5 !px-3 !text-[10px]" id="bstat-monthly" onclick="switchStatMode('monthly')">MONTHLY</button>
+          <button class="tab-btn !py-1.5 !px-3 !text-[10px]" id="bstat-daily" onclick="switchStatMode('daily')">DAILY</button>
+        </div>
+      </div>
+      <div id="budget-stats-content" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
+    </div>
 
-<!-- FLOATING ENTRY BAR -->
-<div class="fixed bottom-0 left-0 right-0 bg-neu-box border-t border-neu-track p-3 z-50 shadow-[0_-4px_20px_rgba(0,0,0,0.08)] pb-[calc(env(safe-area-inset-bottom,16px)+12px)]">
-  <div class="flex items-center gap-2 max-w-4xl mx-auto w-full">
-    <span class="font-mono text-neu-highlight text-2xl leading-none font-light pl-2">›</span>
-    <input id="budget-item" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none focus:!ring-0 px-2 py-2 font-sans text-lg text-neu-text placeholder:text-neu-accent/50 placeholder:font-sans" placeholder="Amount + item..." autocomplete="off"
-      onkeydown="if(event.key==='Enter')addBudgetEntry()">
-    <button class="w-12 h-12 flex items-center justify-center rounded-none bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
-      <i class="fa-solid fa-plus"></i>
-    </button>
-  </div>
-</div>
+  </main>
 
 <script type="module">
 // ─── FIREBASE ─────────────────────────────────
