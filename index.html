@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Budget Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+:root {
+  --blue:#3b82f6; --green:#22c55e; --red:#ef4444;
+  --amber:#f59e0b; --purple:#a855f7; --teal:#14b8a6;
+  --bg:#000; --surface:#0a0a0a; --elevated:#111; --panel:#0a0a0a;
+  --border:#222; --tp:#fff; --tm:#9ca3af; --td:#6b7280;
+  --shadow:0 8px 24px rgba(0,0,0,.8);
+}
+:root.light {
+  --blue:#4f46e5; --green:#059669; --red:#dc2626;
+  --amber:#d97706; --purple:#7c3aed; --teal:#0d9488;
+  --bg:#fefaf0; --surface:#fefaf0; --elevated:#f3eee1; --panel:#fefaf0;
+  --border:#e7e2d4; --tp:#292524; --tm:#57534e; --td:#a8a29e;
+  --shadow:0 1px 3px rgba(0,0,0,.08),0 1px 2px rgba(0,0,0,.04);
+}
+*{box-sizing:border-box;transition:background-color 150ms,border-color 150ms,color 150ms}
+body{background:var(--bg);color:var(--tp);font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;font-size:14px;min-height:100vh;margin:0;overflow-x:hidden}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px}
+input,textarea,select,button{outline:none;font-family:inherit}
+input,select{background:transparent!important;border:1px solid var(--border)!important;color:var(--tp);padding:8px 16px;font-size:13px;border-radius:8px;transition:all 150ms}
+input:focus,select:focus{border-color:var(--tm)!important}
+button{cursor:pointer;border-radius:9999px}
+.btn{border:none!important;color:var(--tm);padding:8px 16px;font-size:12px;font-weight:500;background:var(--elevated);transition:all 120ms;border-radius:9999px}
+.btn:hover{color:var(--tp);background:var(--border)}
+.btn-amber{color:#fff!important;background:var(--amber)!important}.btn-amber:hover{opacity:.9}
+.btn-blue{color:#fff!important;background:var(--blue)!important}.btn-blue:hover{opacity:.9}
+.btn-green{color:#fff!important;background:var(--green)!important}.btn-green:hover{opacity:.9}
+.btn-red{color:#fff!important;background:var(--red)!important}.btn-red:hover{opacity:.9}
+.btn-teal{color:#fff!important;background:var(--teal)!important}.btn-teal:hover{opacity:.9}
+.mono{font-family:'JetBrains Mono',ui-monospace,monospace;font-weight:500}
+.label{font-size:11px;font-weight:600;text-transform:uppercase;color:var(--tm);letter-spacing:.05em}
+.card{background:transparent;border:none;border-radius:0}
+
+/* Nav */
+nav{background:var(--panel);border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;padding:0 20px;height:48px;position:sticky;top:0;z-index:20}
+
+/* Toast */
+#toasts{position:fixed;bottom:90px;right:16px;display:flex;flex-direction:column;gap:6px;z-index:9999}
+.toast{padding:12px 16px;background:var(--surface);border:none;border-left:4px solid;font-size:13px;font-weight:500;box-shadow:var(--shadow);border-radius:16px;animation:slideUp 150ms ease-out forwards;max-width:320px;color:var(--tp)!important}
+.toast.green{border-left-color:var(--green)}
+.toast.red{border-left-color:var(--red)}
+.toast.blue{border-left-color:var(--blue)}
+.toast.amber{border-left-color:var(--amber)}
+@keyframes slideUp{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+/* Floating bar */
+.floating-bar{position:fixed;bottom:20px;right:20px;width:340px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px!important;padding:6px 12px!important;display:flex;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.4)!important;z-index:100}
+.floating-bar input{flex:1;background:transparent!important;border:none!important;outline:none!important;padding:0!important;font-size:12px!important;color:var(--tp)!important;min-width:0}
+.floating-bar button{padding:4px 12px!important;font-size:10px!important;min-height:26px}
+
+/* Person bar */
+#budget-person-container{position:fixed;bottom:76px;right:20px;width:340px;max-width:calc(100vw - 32px);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px!important;padding:6px 12px!important;display:none;align-items:center;gap:8px;box-shadow:0 4px 16px rgba(0,0,0,.4)!important;z-index:99}
+#budget-person-container input{flex:1;background:transparent!important;border:none!important;outline:none!important;padding:0!important;font-size:12px!important;color:var(--tp)!important;min-width:0}
+
+/* Main layout */
+main{max-width:900px;margin:0 auto;padding:20px 20px 140px;display:flex;flex-direction:column;gap:14px}
+
+/* Summary cards */
+.summary-row{display:flex;gap:10px;flex-wrap:wrap}
+.summary-card{flex:1;min-width:120px;padding:14px;background:var(--surface);border-radius:16px;border-left:3px solid}
+
+/* Cat quick buttons */
+.cat-bar{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0}
+.cat-btn{font-size:10px;padding:4px 10px;color:var(--tm);background:var(--surface);border:1px solid var(--border)!important;border-radius:9999px;transition:all 120ms}
+.cat-btn:hover,.cat-btn.active{color:var(--amber);background:rgba(245,158,11,.08);border-color:rgba(245,158,11,.3)!important}
+
+/* Tab buttons */
+.tab-row{display:flex;gap:4px}
+.tab-btn{font-size:10px;padding:5px 14px;border-radius:9999px;border:none;background:var(--surface);color:var(--td);font-weight:600}
+.tab-btn.active{color:var(--amber);background:rgba(245,158,11,.1)}
+
+/* Panels */
+.panel{background:var(--surface);border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:0}
+.panel-hidden{display:none!important}
+
+/* Ledger entry */
+.tx-entry{display:flex;justify-content:space-between;align-items:center;border-left:2px solid;padding:10px 14px;margin-bottom:8px;border-radius:0 8px 8px 0}
+.date-header{font-size:9px;color:var(--td);letter-spacing:.08em;margin-top:12px;margin-bottom:5px;padding-bottom:4px;border-bottom:1px solid rgba(255,255,255,.05)}
+
+/* Bar chart row */
+.bar-row{margin-bottom:8px}
+.bar-track{height:3px;background:rgba(255,255,255,.06);border-radius:2px;margin-top:3px}
+.bar-fill{height:100%;border-radius:2px;transition:width .4s ease}
+
+/* Sync dot */
+.sync-dot{width:7px;height:7px;border-radius:50%;background:var(--td);flex-shrink:0;transition:background .3s}
+.sync-dot.synced{background:var(--green)}
+.sync-dot.syncing{background:var(--amber);animation:pulse .8s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* Undo button */
+#btn-undo{padding:3px 8px;font-size:10px}
+
+@media(max-width:600px){
+  .summary-row{flex-direction:column}
+  .floating-bar{width:calc(100vw - 32px)}
+  #budget-person-container{width:calc(100vw - 32px)}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="mono" style="font-weight:800;color:var(--amber);font-size:15px;letter-spacing:.05em">
+      <i class="fa-solid fa-indian-rupee-sign" style="font-size:13px"></i> BUDGET
+    </span>
+    <div id="sync-dot" class="sync-dot" title="Sync status"></div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="btn" id="btn-undo" title="Undo"><i class="fa-solid fa-rotate-left"></i></button>
+    <button class="btn" onclick="document.documentElement.classList.toggle('light')" title="Toggle theme"><i class="fa-solid fa-circle-half-stroke"></i></button>
+  </div>
+</nav>
+
+<div id="toasts"></div>
+
+<!-- PERSON INPUT -->
+<div id="budget-person-container">
+  <span class="mono" style="color:var(--tm);font-size:13px">@</span>
+  <input id="budget-person" type="text" placeholder="Person name...">
+</div>
+
+<!-- FLOATING ENTRY BAR -->
+<div class="floating-bar">
+  <span class="mono" style="color:var(--amber);font-size:18px;line-height:1;padding-bottom:2px">›</span>
+  <input id="budget-item" type="text" class="mono" placeholder="Amount + item..." autocomplete="off"
+    onkeydown="if(event.key==='Enter')addBudgetEntry()"
+    oninput="checkBudgetPerson()">
+  <button class="btn btn-amber" onclick="addBudgetEntry()"><i class="fa-solid fa-plus"></i></button>
+</div>
+
+<!-- MAIN -->
+<main>
+
+  <!-- SUMMARY -->
+  <div class="summary-row">
+    <div class="summary-card" style="border-color:var(--tp)">
+      <div class="label">TOTAL BALANCE</div>
+      <div class="mono" style="font-size:26px;font-weight:800;margin-top:6px"><span id="budget-total" style="color:var(--tp)">₹0</span></div>
+    </div>
+    <div class="summary-card" style="border-color:var(--blue)">
+      <div class="label">ONLINE</div>
+      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-online" style="color:var(--tp)">₹0</span></div>
+    </div>
+    <div class="summary-card" style="border-color:var(--amber)">
+      <div class="label">CASH</div>
+      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-cash" style="color:var(--tp)">₹0</span></div>
+    </div>
+    <div class="summary-card" style="border-color:var(--red)">
+      <div class="label">THIS MONTH</div>
+      <div class="mono" style="font-size:20px;font-weight:700;margin-top:6px"><span id="budget-month" style="color:var(--red)">₹0</span></div>
+    </div>
+  </div>
+
+  <!-- CATEGORY QUICK BUTTONS -->
+  <div class="cat-bar" id="cat-bar">
+    <button class="cat-btn" data-cat="v">v · VEG</button>
+    <button class="cat-btn" data-cat="f">f · FRUIT</button>
+    <button class="cat-btn" data-cat="m">m · MILK</button>
+    <button class="cat-btn" data-cat="g">g · GAS</button>
+    <button class="cat-btn" data-cat="ff">ff · FAST FOOD</button>
+    <button class="cat-btn" data-cat="r">r · RATION</button>
+    <button class="cat-btn" data-cat="gt">gt · GIVEN TO</button>
+    <button class="cat-btn" data-cat="tf">tf · TAKEN FROM</button>
+  </div>
+
+  <!-- TABS -->
+  <div class="tab-row">
+    <button class="tab-btn active" id="tab-ledger" onclick="switchTab('ledger')">LEDGER</button>
+    <button class="tab-btn" id="tab-stats" onclick="switchTab('stats')">ANALYTICS</button>
+  </div>
+
+  <!-- LEDGER PANEL -->
+  <div class="panel" id="panel-ledger">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px">
+      <div class="mono" style="font-size:10px;color:var(--tp);letter-spacing:.08em">
+        TRANSACTION LEDGER <span id="ledger-month-label" style="color:var(--td);margin-left:4px"></span>
+      </div>
+    </div>
+    <div id="budget-list"></div>
+  </div>
+
+  <!-- STATS PANEL -->
+  <div class="panel panel-hidden" id="panel-stats">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <div class="mono" style="font-size:10px;color:var(--tp);letter-spacing:.08em">ANALYTICS</div>
+      <div style="display:flex;gap:4px">
+        <button class="tab-btn active" id="bstat-monthly" onclick="switchStatMode('monthly')">MONTHLY</button>
+        <button class="tab-btn" id="bstat-daily" onclick="switchStatMode('daily')">DAILY</button>
+      </div>
+    </div>
+    <div id="budget-stats-content"></div>
+  </div>
+
+</main>
+
+<script type="module">
+// ─── FIREBASE ─────────────────────────────────
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+
+const FB_CONFIG = {
+  apiKey: "AIzaSyD07C7OHAd4b4JSP9yPwx40pkCpd53yKrA",
+  authDomain: "infinity-369.firebaseapp.com",
+  projectId: "infinity-369",
+  storageBucket: "infinity-369.firebasestorage.app",
+  messagingSenderId: "1029653211647",
+  appId: "1:1029653211647:web:4612a3e5f11b2739c01fca",
+  databaseURL: "https://infinity-369-default-rtdb.firebaseio.com"
+};
+const app = initializeApp(FB_CONFIG);
+const db  = getDatabase(app);
+const OPERATIVE_ID = "raja_prime";
+
+// ─── STATE ────────────────────────────────────
+let S = { budget: [], lastUpdated: 0 };
+let isCloudSynced = false;
+let undoStack = [];
+
+const MONTH_NAMES = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC'];
+const CAT_MAP = {
+  'v':'Vegetable','vegetable':'Vegetable',
+  'f':'Fruit','fr':'Fruit','fruit':'Fruit',
+  'm':'Milk','milk':'Milk',
+  'g':'Gas','gas':'Gas',
+  'ff':'Fast food','fast food':'Fast food',
+  'r':'Food ration','food ration':'Food ration',
+  'gt':'Given to','given to':'Given to',
+  'tf':'Taken from','taken from':'Taken from'
+};
+
+// ─── SYNC ─────────────────────────────────────
+function setSyncDot(state) {
+  const d = document.getElementById('sync-dot');
+  d.className = 'sync-dot ' + state;
+  d.title = state === 'synced' ? 'Synced' : state === 'syncing' ? 'Syncing…' : 'Sync error';
+}
+
+function save() {
+  if (!isCloudSynced) return;
+  setSyncDot('syncing');
+  // Pull full cloud state, update only budget, push back
+  get(ref(db, 'operatives/' + OPERATIVE_ID)).then(snap => {
+    const full = snap.exists() ? snap.val() : {};
+    full.budget = S.budget;
+    full.lastUpdated = Date.now();
+    return set(ref(db, 'operatives/' + OPERATIVE_ID), full);
+  }).then(() => setSyncDot('synced'))
+    .catch(err => { console.error(err); setSyncDot('error'); toast('SYNC ERROR', 'red'); });
+}
+
+function syncFromFirebase() {
+  setSyncDot('syncing');
+  toast('SYNCING...', 'amber');
+  get(ref(db, 'operatives/' + OPERATIVE_ID)).then(snap => {
+    isCloudSynced = true;
+    if (snap.exists()) {
+      const data = snap.val();
+      S.budget = data.budget || [];
+      S.lastUpdated = data.lastUpdated || 0;
+    }
+    setSyncDot('synced');
+    renderBudget();
+    toast('SYNC COMPLETE', 'green');
+  }).catch(err => {
+    isCloudSynced = true;
+    console.error(err);
+    setSyncDot('error');
+    toast('RUNNING OFFLINE', 'red');
+  });
+}
+
+// ─── HELPERS ──────────────────────────────────
+function $(id) { return document.getElementById(id); }
+function dateKey(d) { return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`; }
+
+function toast(msg, type = 'blue') {
+  const c = $('toasts');
+  const el = document.createElement('div');
+  el.className = `toast ${type}`;
+  el.textContent = msg;
+  c.appendChild(el);
+  setTimeout(() => { el.style.opacity='0'; el.style.transform='translateX(10px)'; setTimeout(()=>el.remove(),200); }, 3000);
+}
+
+function pushHistory() {
+  undoStack.push(JSON.stringify(S.budget));
+  if (undoStack.length > 50) undoStack.shift();
+}
+
+// ─── BUDGET LOGIC ─────────────────────────────
+window.checkBudgetPerson = function() {
+  const val = $('budget-item').value.toLowerCase().trim();
+  const pContainer = $('budget-person-container');
+  pContainer.style.display = (val === 'given to' || val === 'taken from') ? 'flex' : 'none';
+};
+
+window.addBudgetEntry = function() {
+  const inputStr = $('budget-item').value.trim();
+  if (!inputStr) { toast('ERR: Input required', 'red'); return; }
+
+  const parts = inputStr.split(/\s+/);
+  let amount = 0, mode = 'Online', category = 'Miscellaneous', person = '', item = '';
+  const remainingParts = [];
+
+  parts.forEach(p => {
+    const num = parseFloat(p);
+    if (!isNaN(num) && num > 0) amount = num;
+    else if (p.toLowerCase() === 'cash') mode = 'Cash';
+    else if (p.toLowerCase() === 'online') mode = 'Online';
+    else remainingParts.push(p);
+  });
+
+  let catIndex = -1;
+  for (let ci = 0; ci < remainingParts.length; ci++) {
+    if (CAT_MAP[remainingParts[ci].toLowerCase()]) { catIndex = ci; break; }
+  }
+  if (catIndex !== -1) {
+    category = CAT_MAP[remainingParts[catIndex].toLowerCase()];
+    const others = remainingParts.filter((_, i) => i !== catIndex);
+    if (category === 'Given to' || category === 'Taken from') {
+      person = ($('budget-person').value.trim()) || others.join(' ') || 'Unknown';
+    } else {
+      item = others.join(' ');
+    }
+  } else if (remainingParts.length > 0) {
+    // treat entire non-number remainder as category/item
+    category = remainingParts.join(' ');
+  }
+
+  if (amount <= 0) { toast('ERR: Enter a valid amount', 'red'); return; }
+
+  pushHistory();
+  if (!S.budget) S.budget = [];
+  S.budget.push({ id: 'b_' + Date.now(), date: Date.now(), category, amount, mode, person, item });
+
+  save();
+  renderBudget();
+
+  $('budget-item').value = '';
+  $('budget-person').value = '';
+  $('budget-person-container').style.display = 'none';
+
+  // Reset active cat button highlight
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+
+  toast(`RECORDED: ${category}${person?' ('+person+')':''} ₹${amount} · ${mode}`, 'green');
+};
+
+window.deleteBudget = function(id) {
+  pushHistory();
+  S.budget = S.budget.filter(b => b.id !== id);
+  save();
+  renderBudget();
+  toast('DELETED', 'red');
+};
+
+window.budgetSelectCat = function(cat, btn) {
+  const inp = $('budget-item');
+  const parts = inp.value.trim().split(/\s+/).filter(Boolean);
+  const catKeys = Object.keys(CAT_MAP);
+  const filtered = parts.filter(p => !catKeys.includes(p.toLowerCase()));
+  filtered.push(cat);
+  inp.value = filtered.join(' ');
+  inp.focus();
+  document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+};
+
+// ─── RENDER ───────────────────────────────────
+window.renderBudget = function() {
+  const list = $('budget-list');
+  if (!list) return;
+  list.innerHTML = '';
+
+  let total = 0, onlineTotal = 0, cashTotal = 0, monthTotal = 0;
+  const now = new Date();
+  const curMonth = now.getMonth(), curYear = now.getFullYear();
+
+  (S.budget || []).forEach(b => {
+    const sign = b.category.toLowerCase() === 'taken from' ? 1 : -1;
+    total += sign * b.amount;
+    if (b.mode === 'Online') onlineTotal += sign * b.amount;
+    else cashTotal += sign * b.amount;
+    const bd = new Date(b.date);
+    if (bd.getMonth() === curMonth && bd.getFullYear() === curYear && sign === -1) monthTotal += b.amount;
+  });
+
+  // Update summary
+  function setMoney(id, val, redNeg = true) {
+    const el = $(id);
+    if (!el) return;
+    el.textContent = (val < 0 ? '-₹' : '₹') + Math.abs(val).toLocaleString('en-IN');
+    if (redNeg) el.style.color = val >= 0 ? 'var(--green)' : 'var(--red)';
+  }
+  setMoney('budget-total', total);
+  setMoney('budget-online', onlineTotal);
+  setMoney('budget-cash', cashTotal);
+  if ($('budget-month')) { $('budget-month').textContent = '₹' + monthTotal.toLocaleString('en-IN'); }
+
+  // Month label
+  if ($('ledger-month-label')) $('ledger-month-label').textContent = '· ' + MONTH_NAMES[curMonth] + ' ' + curYear;
+
+  // Ledger — current month only, newest first
+  const entries = [...(S.budget || [])]
+    .filter(b => { const d = new Date(b.date); return d.getMonth() === curMonth && d.getFullYear() === curYear; })
+    .reverse();
+
+  if (!entries.length) {
+    list.innerHTML = '<div class="mono" style="color:var(--td);font-size:11px;padding:8px 4px">› no transactions this month.</div>';
+    return;
+  }
+
+  let lastDay = '';
+  entries.forEach(b => {
+    const d = new Date(b.date);
+    const dayStr = d.getDate() + ' ' + MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear();
+    const isIncome = b.category.toLowerCase() === 'taken from';
+    const color = isIncome ? 'var(--green)' : 'var(--red)';
+    const amtStr = (isIncome ? '+' : '-') + '₹' + b.amount.toLocaleString('en-IN');
+    const displayTitle = b.item || b.person || b.category;
+
+    if (dayStr !== lastDay) {
+      list.innerHTML += `<div class="mono date-header">${dayStr}</div>`;
+      lastDay = dayStr;
+    }
+
+    const timeStr = String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+
+    list.innerHTML += `
+      <div class="tx-entry" style="border-color:${color}">
+        <div style="display:flex;flex-direction:column;gap:4px;min-width:0;flex:1">
+          <span style="font-weight:600;font-size:12px;color:var(--tp);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${displayTitle}</span>
+          <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
+            <span class="mono" style="font-size:9px;color:var(--tm)">${b.category}</span>
+            <span style="color:var(--td);font-size:9px">·</span>
+            <span class="mono" style="font-size:9px;color:${b.mode==='Cash'?'var(--amber)':'var(--blue)'}">${b.mode.toUpperCase()}</span>
+            <span style="color:var(--td);font-size:9px">·</span>
+            <span class="mono" style="font-size:9px;color:var(--td)">${timeStr}</span>
+          </div>
+        </div>
+        <div style="display:flex;align-items:center;gap:10px;flex-shrink:0">
+          <span class="mono" style="font-weight:700;font-size:15px;color:${color}">${amtStr}</span>
+          <button class="btn" style="padding:4px 7px;font-size:11px;color:var(--td);background:transparent" onclick="deleteBudget('${b.id}')"><i class="fa-solid fa-trash"></i></button>
+        </div>
+      </div>`;
+  });
+};
+
+// ─── STATS ────────────────────────────────────
+window.switchTab = function(tab) {
+  $('panel-ledger').classList.toggle('panel-hidden', tab !== 'ledger');
+  $('panel-stats').classList.toggle('panel-hidden', tab !== 'stats');
+  $('tab-ledger').classList.toggle('active', tab === 'ledger');
+  $('tab-stats').classList.toggle('active', tab === 'stats');
+  if (tab === 'stats') renderStats('monthly');
+};
+
+let statMode = 'monthly';
+window.switchStatMode = function(mode) {
+  statMode = mode;
+  $('bstat-monthly').classList.toggle('active', mode === 'monthly');
+  $('bstat-daily').classList.toggle('active', mode === 'daily');
+  renderStats(mode);
+};
+
+function renderStats(mode) {
+  const container = $('budget-stats-content');
+  if (!container) return;
+  container.innerHTML = '';
+  const entries = S.budget || [];
+  const now = new Date();
+  const barColor = mode === 'monthly' ? 'var(--amber)' : 'var(--teal)';
+
+  const groups = [];
+
+  if (mode === 'monthly') {
+    for (let mi = 5; mi >= 0; mi--) {
+      const d = new Date(now.getFullYear(), now.getMonth() - mi, 1);
+      groups.push({
+        label: MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear(),
+        items: entries.filter(b => {
+          const bd = new Date(b.date);
+          return bd.getFullYear() === d.getFullYear() && bd.getMonth() === d.getMonth() && b.category.toLowerCase() !== 'taken from';
+        })
+      });
+    }
+  } else {
+    for (let di = 29; di >= 0; di--) {
+      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - di);
+      groups.push({
+        label: d.getDate() + ' ' + MONTH_NAMES[d.getMonth()],
+        items: entries.filter(b => {
+          const bd = new Date(b.date);
+          return bd.getDate() === d.getDate() && bd.getMonth() === d.getMonth() && bd.getFullYear() === d.getFullYear() && b.category.toLowerCase() !== 'taken from';
+        })
+      });
+    }
+  }
+
+  let hasData = false;
+  groups.forEach(g => {
+    if (!g.items.length) return;
+    hasData = true;
+    const catTotals = {};
+    let grandTotal = 0;
+    g.items.forEach(b => { catTotals[b.category] = (catTotals[b.category] || 0) + b.amount; grandTotal += b.amount; });
+
+    let html = `<div style="margin-bottom:18px">
+      <div class="mono" style="font-size:10px;color:${barColor};letter-spacing:.08em;margin-bottom:10px;padding-bottom:6px;border-bottom:1px solid rgba(255,255,255,.06)">${g.label}</div>`;
+
+    Object.entries(catTotals).sort((a,b)=>b[1]-a[1]).forEach(([cat, amt]) => {
+      const pct = Math.round((amt / grandTotal) * 100);
+      html += `<div class="bar-row">
+        <div style="display:flex;justify-content:space-between">
+          <span class="mono" style="font-size:10px;color:var(--tm)">${cat.toUpperCase()}</span>
+          <span class="mono" style="font-size:10px;color:var(--tp)">₹${amt.toLocaleString('en-IN')} <span style="color:var(--td)">(${pct}%)</span></span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${barColor}"></div></div>
+      </div>`;
+    });
+
+    html += `<div style="display:flex;justify-content:space-between;margin-top:10px;padding-top:8px;border-top:1px solid rgba(255,255,255,.06)">
+        <span class="mono" style="font-size:10px;color:var(--td)">TOTAL SPENT</span>
+        <span class="mono" style="font-size:12px;font-weight:700;color:var(--red)">-₹${grandTotal.toLocaleString('en-IN')}</span>
+      </div></div>`;
+    container.innerHTML += html;
+  });
+
+  if (!hasData) container.innerHTML = '<div class="mono" style="color:var(--td);font-size:11px;padding:8px 4px">› no data for this period.</div>';
+}
+
+// ─── CAT BUTTONS ──────────────────────────────
+document.querySelectorAll('.cat-btn').forEach(btn => {
+  btn.addEventListener('click', function() { budgetSelectCat(this.dataset.cat, this); });
+});
+
+// ─── UNDO ─────────────────────────────────────
+document.getElementById('btn-undo').addEventListener('click', () => {
+  if (!undoStack.length) { toast('NOTHING TO UNDO', 'amber'); return; }
+  S.budget = JSON.parse(undoStack.pop());
+  save();
+  renderBudget();
+  toast('UNDONE', 'amber');
+});
+
+// ─── INIT ─────────────────────────────────────
+renderBudget();
+syncFromFirebase();
+</script>
+</body>
+</html>
