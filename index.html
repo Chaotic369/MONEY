@@ -214,7 +214,7 @@ tailwind.config = {
 <script type="module">
 // ─── FIREBASE ─────────────────────────────────
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-app.js";
-import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
+import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/12.13.0/firebase-database.js";
 
 const FB_CONFIG = {
   apiKey: "AIzaSyD07C7OHAd4b4JSP9yPwx40pkCpd53yKrA",
@@ -257,14 +257,15 @@ function setSyncDot(state) {
 }
 
 function save() {
-  if (!isCloudSynced) return;
+  if (!isCloudSynced) {
+    toast('WAIT FOR SYNC', 'amber');
+    return;
+  }
   setSyncDot('syncing');
-  // Pull full cloud state, update only budget, push back
-  get(ref(db, 'operatives/' + OPERATIVE_ID)).then(snap => {
-    const full = snap.exists() ? snap.val() : {};
-    full.budget = S.budget;
-    full.lastUpdated = Date.now();
-    return set(ref(db, 'operatives/' + OPERATIVE_ID), full);
+  
+  update(ref(db, 'operatives/' + OPERATIVE_ID), {
+    budget: S.budget,
+    lastUpdated: Date.now()
   }).then(() => setSyncDot('synced'))
     .catch(err => { console.error(err); setSyncDot('error'); toast('SYNC ERROR', 'red'); });
 }
@@ -276,9 +277,19 @@ function syncFromFirebase() {
     isCloudSynced = true;
     if (snap.exists()) {
       const data = snap.val();
-      S.budget = data.budget || [];
+      let parsedBudget = data.budget || [];
+      
+      // Fix Firebase RTDB array-to-object conversion bug when items are deleted
+      if (!Array.isArray(parsedBudget)) {
+        parsedBudget = Object.values(parsedBudget);
+      }
+      
+      S.budget = parsedBudget;
       S.lastUpdated = data.lastUpdated || 0;
+    } else {
+      S.budget = [];
     }
+    
     setSyncDot('synced');
     renderBudget();
     toast('SYNC COMPLETE', 'green');
