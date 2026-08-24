@@ -136,16 +136,10 @@ tailwind.config = {
       <div class="flex items-center gap-2">
         <span class="font-mono text-neu-highlight text-2xl leading-none font-light pl-2">›</span>
         <input id="budget-item" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none focus:!ring-0 px-2 py-2 font-mono text-lg text-neu-text placeholder:text-neu-accent/50" placeholder="Amount + item..." autocomplete="off"
-          onkeydown="if(event.key==='Enter')addBudgetEntry()"
-          oninput="checkBudgetPerson()">
+          onkeydown="if(event.key==='Enter')addBudgetEntry()">
         <button class="w-12 h-12 flex items-center justify-center rounded-xl bg-neu-highlight text-neu-bg hover:opacity-90 transition-opacity shrink-0 shadow-sm" onclick="addBudgetEntry()">
           <i class="fa-solid fa-plus"></i>
         </button>
-      </div>
-      <!-- PERSON INPUT (Hidden by default) -->
-      <div id="budget-person-container" style="display:none;" class="items-center gap-2 pl-4 pr-14">
-        <span class="font-mono text-neu-accent text-sm">@</span>
-        <input id="budget-person" type="text" class="flex-1 !bg-transparent !border-none !outline-none !shadow-none px-2 py-1 font-mono text-sm text-neu-text placeholder:text-neu-accent/50" placeholder="Person name...">
       </div>
     </div>
 
@@ -320,15 +314,6 @@ function pushHistory() {
 // ─── BUDGET LOGIC ─────────────────────────────
 let activeCategoryTag = null;
 
-window.checkBudgetPerson = function() {
-  const val = $('budget-item').value.toLowerCase().trim();
-  const pContainer = $('budget-person-container');
-  let show = false;
-  if (activeCategoryTag === 'gt' || activeCategoryTag === 'tf') show = true;
-  if (val.includes('given to') || val.includes('taken from')) show = true;
-  pContainer.style.display = show ? 'flex' : 'none';
-};
-
 window.addBudgetEntry = function() {
   const inputStr = $('budget-item').value.trim();
   if (!inputStr) { toast('ERR: Input required', 'red'); return; }
@@ -348,7 +333,7 @@ window.addBudgetEntry = function() {
   if (activeCategoryTag && CAT_MAP[activeCategoryTag.toLowerCase()]) {
     category = CAT_MAP[activeCategoryTag.toLowerCase()];
     if (category === 'Given to' || category === 'Taken from') {
-      person = ($('budget-person').value.trim()) || remainingParts.join(' ') || 'Unknown';
+      person = remainingParts.join(' ') || 'Unknown';
     } else {
       item = remainingParts.join(' ');
     }
@@ -361,7 +346,7 @@ window.addBudgetEntry = function() {
       category = CAT_MAP[remainingParts[catIndex].toLowerCase()];
       const others = remainingParts.filter((_, i) => i !== catIndex);
       if (category === 'Given to' || category === 'Taken from') {
-        person = ($('budget-person').value.trim()) || others.join(' ') || 'Unknown';
+        person = others.join(' ') || 'Unknown';
       } else {
         item = others.join(' ');
       }
@@ -380,8 +365,6 @@ window.addBudgetEntry = function() {
   renderBudget();
 
   $('budget-item').value = '';
-  $('budget-person').value = '';
-  $('budget-person-container').style.display = 'none';
 
   activeCategoryTag = null;
   document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
@@ -406,7 +389,6 @@ window.budgetSelectCat = function(cat, btn) {
     document.querySelectorAll('.cat-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
   }
-  checkBudgetPerson();
   $('budget-item').focus();
 };
 
