@@ -467,13 +467,13 @@ window.renderBudget = function() {
   const curMonth = now.getMonth(), curYear = now.getFullYear();
 
   (S.budget || []).forEach(b => {
-    const sign = b.category.toLowerCase() === 'taken from' ? 1 : -1;
-    total += sign * b.amount;
-    if (b.mode === 'Online') onlineTotal += sign * b.amount;
-    else cashTotal += sign * b.amount;
-    const bd = new Date(b.date);
-    if (bd.getMonth() === curMonth && bd.getFullYear() === curYear && sign === -1) monthTotal += b.amount;
-  });
+      const sign = b.category.toLowerCase() === 'taken from' ? 1 : -1;
+      total += sign * b.amount;
+      if (b.mode === 'Online') onlineTotal += sign * b.amount;
+      else cashTotal += sign * b.amount;
+      const bd = new Date(b.date);
+      if (bd.getMonth() === curMonth && bd.getFullYear() === curYear && sign === -1 && b.person !== 'Balance Reset') monthTotal += b.amount;
+    });
 
   // Update summary
   function setMoney(id, val, redNeg = true) {
@@ -578,28 +578,28 @@ function renderStats(mode) {
   const groups = [];
 
   if (mode === 'monthly') {
-    for (let mi = 5; mi >= 0; mi--) {
-      const d = new Date(now.getFullYear(), now.getMonth() - mi, 1);
-      groups.push({
-        label: MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear(),
-        items: entries.filter(b => {
-          const bd = new Date(b.date);
-          return bd.getFullYear() === d.getFullYear() && bd.getMonth() === d.getMonth() && b.category.toLowerCase() !== 'taken from';
-        })
-      });
+      for (let mi = 5; mi >= 0; mi--) {
+        const d = new Date(now.getFullYear(), now.getMonth() - mi, 1);
+        groups.push({
+          label: MONTH_NAMES[d.getMonth()] + ' ' + d.getFullYear(),
+          items: entries.filter(b => {
+            const bd = new Date(b.date);
+            return bd.getFullYear() === d.getFullYear() && bd.getMonth() === d.getMonth() && b.category.toLowerCase() !== 'taken from' && b.person !== 'Balance Reset';
+          })
+        });
+      }
+    } else {
+      for (let di = 29; di >= 0; di--) {
+        const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - di);
+        groups.push({
+          label: d.getDate() + ' ' + MONTH_NAMES[d.getMonth()],
+          items: entries.filter(b => {
+            const bd = new Date(b.date);
+            return bd.getDate() === d.getDate() && bd.getMonth() === d.getMonth() && bd.getFullYear() === d.getFullYear() && b.category.toLowerCase() !== 'taken from' && b.person !== 'Balance Reset';
+          })
+        });
+      }
     }
-  } else {
-    for (let di = 29; di >= 0; di--) {
-      const d = new Date(now.getFullYear(), now.getMonth(), now.getDate() - di);
-      groups.push({
-        label: d.getDate() + ' ' + MONTH_NAMES[d.getMonth()],
-        items: entries.filter(b => {
-          const bd = new Date(b.date);
-          return bd.getDate() === d.getDate() && bd.getMonth() === d.getMonth() && bd.getFullYear() === d.getFullYear() && b.category.toLowerCase() !== 'taken from';
-        })
-      });
-    }
-  }
 
   let hasData = false;
   let html = '';
